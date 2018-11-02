@@ -1,53 +1,14 @@
-/*
-variables
-*/
-var model;
-var img;
+
 var classNames = [];
-var _validFileExtensions = [".jpg", ".jpeg", ".bmp", ".png"];    
-function Validate(oForm) {
-    img = oForm.getElementsByTagName("input");
-    for (var i = 0; i < img.length; i++) {
-        var oInput = img[i];
-        if (oInput.type == "file") {
-            var sFileName = oInput.value;
-            if (sFileName.length > 0) {
-                var blnValid = false;
-                for (var j = 0; j < _validFileExtensions.length; j++) {
-                    var sCurExtension = _validFileExtensions[j];
-                    if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
-                        blnValid = true;
-                        break;
-                    }
-                }
-                
-                if (!blnValid) {
-                    alert("Sorry, " + sFileName + " is invalid, allowed extensions are: " + _validFileExtensions.join(", "));
-                    return false;
-                }
-            }
-        }
-    }
-  
-    return true;
-}
-/*
-get the the class names 
-*/
-function getClassNames(indices) {
-    var outp = []
-    for (var i = 0; i < indices.length; i++)
-        outp[i] = classNames[indices[i]]
-    return outp
-}
+var model;
 
 /*
 load the class names 
 */
 async function loadDict() {
   
-    loc = 'model/class_names.txt'
-    
+    loc = 'labels.txt'
+    console.log(loc)
     await $.ajax({
         url: loc,
         dataType: 'text',
@@ -62,9 +23,30 @@ function success(data) {
     for (var i = 0; i < lst.length - 1; i++) {
         let symbol = lst[i]
         classNames[i] = symbol
+    console.log(classNames)	    
     }
 }
-
+/*
+get the the class names 
+*/
+function getClassNames(indices) {
+    var outp = []
+    for (var i = 0; i < indices.length; i++)
+        outp[i] = classNames[indices[i]]
+    console.log(outp)	
+    return outp
+}
+/*
+find predictions
+*/
+function findTopValues(inp, count) {
+    var outp = [];
+    let indices = findIndicesOfMax(inp, count)
+    // show  scores
+    for (var i = 0; i < indices.length; i++)
+        outp[i] = inp[indices[i]]
+    return outp
+}
 /*
 get indices of the top probs
 */
@@ -81,62 +63,9 @@ function findIndicesOfMax(inp, count) {
     }
     return outp;
 }
-
-/*
-find predictions
-*/
-function findTopValues(inp, count) {
-    var outp = [];
-    let indices = findIndicesOfMax(inp, count)
-    // show  scores
-    for (var i = 0; i < indices.length; i++)
-        outp[i] = inp[indices[i]]
-    return outp
-}
-
-
-/*
-set the table of the predictions 
-*/
-function setTable(names, probs) {
-    //loop over the predictions 
-    for (var i = 0; i < names.length; i++) {
-        let sym = document.getElementById('sym' + (i + 1))
-        let prob = document.getElementById('prob' + (i + 1))
-        sym.innerHTML = names[i]
-        prob.innerHTML = Math.round(probs[i] * 100)
-    }
-    document.getElementById("Result").innerHTML = sym.innerHTML[0];
-
-}    
-
-/*
-get the prediction 
-*/
-function predict(imgData) {
-	tf.tidy(() => {
-      
-		//get the prediction 
-		const pred = model.predict(preprocess(imgData)).dataSync()
-		    
-		//retreive the highest probability class label 
-		const idx = pred.argMax();
-		
-		//find the predictions 
-        const indices = findIndicesOfMax(pred, 1)
-        const probs = findTopValues(pred, 1)
-        const names = getClassNames(indices) 
-        //set the table 
-        //setTable(names, probs) 
-        document.getElementById("Result").innerHTML = names
-        document.getElementById("Probability").innerHTML = probs
-    });
-  }
-	    
-
 function preprocess(img)
 {
-return tf.tidy(()=>{
+
     //convert the image data to a tensor 
     let tensor = tf.fromPixels(img)
     //resize to 50 X 50
@@ -147,27 +76,54 @@ return tf.tidy(()=>{
     //We add a dimension to get a batch shape 
     const batched = normalized.expandDims(0)
     return batched
-})
-}
 
+}
 /*
-load the model
+get the prediction 
 */
-
-async function start(img) {
-    
-    Validate(img)
-    //load the model 
-    model = await tf.loadModel('model/model.json')
+function predict(imgData) {
         
-    document.getElementById('status').innerHTML = 'Model Loaded';
-        
-    predict(img)
-    
-    //load the class names
-    await loadDict()
+        var class_names = ['Food!','Not food :(']
+        //get the prediction 
+        var pred = model.predict(preprocess(imgData)).dataSync()
+        console.log(pred)            
+        //retreive the highest probability class label 
+        const idx = tf.argMax(pred);
 
-    //else
-        //return false    
+                
+        //find the predictions 
+        var indices = findIndicesOfMax(pred, 1)
+        console.log(indices)
+        var probs = findTopValues(pred, 1)
+        var names = getClassNames(indices) 
+
+        //set the table 
+        //setTable(names, probs) 
+        document.getElementById("Result").innerHTML = names
+        //document.getElementById("Probability").innerHTML = probs
+	console.log(names);
+        console.log(document.getElementById("Result"));
     
-}
+  }
+
+async function start(){
+	//img = document.getElementById('image').files[0];
+	
+        
+        model = await tf.loadModel('model/model.json')
+        
+        var status = document.getElementById('status')
+      
+        status.innerHTML = 'Model Loaded'
+        
+        //document.getElementById('status').innerHTML = 'Model Loaded';
+      
+
+        img = document.getElementById('list').firstElementChild.firstElementChild;
+        //model.predict(tf.zeros([null,50,50,3]))
+        
+	//load the class names
+        await loadDict()
+        predict(img)
+         
+        }
