@@ -6,7 +6,7 @@ load the class names
 */
 async function loadDict() {
   
-    loc = 'model2/class_names.txt'
+    loc = 'labels.txt'
     console.log(loc)
     await $.ajax({
         url: loc,
@@ -109,7 +109,7 @@ async function start(){
 	//img = document.getElementById('image').files[0];
 	
         
-        model = await tf.loadModel('model/model.json')
+        model = await tf.loadModel('model.json')
         
         var status = document.getElementById('status')
       
