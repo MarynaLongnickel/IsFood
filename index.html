@@ -19,14 +19,13 @@
 <div class="container-fluid"> 
 
 <blockquote class="blockquote text-justify" style="margin:30px;">
- <p> This is a simple tool that uses Resnet to recognize IDC in images. 
- The model was trained to recognize  with 40,000 image patches derived from whole slide images and it achieves 90.3% accuracy in detecting Invasive Ductal Carcinoma(IDC) in images.  </p>
-    <footer class="blockquote-footer">Saranya</footer>
+ <p> foodz or nah? </p>
+    <footer class="blockquote-footer">Marina</footer>
   </blockquote>
 
 </div>
 <div class="col" style ='margin-left:100px;'>
-<h4 id ='status' >Loading Model... </h4>
+<h4 id ='status' >Please wait... </h4>
 </div>
 <img id="myimage" height="50">
 
@@ -56,10 +55,7 @@
 <input type="file" id="files" name="files[]" accept=".jpg, .jpeg, .png"/>
 <output id="list"></output>
 <button type="button" value="Submit" onclick = "start()">submit</button>
-<div>
-<p id = "Result"></p>
-<p id = "Probability"></p>
-</div>
+
 <script>
 clearFileInput("files");
 </script>    
@@ -91,8 +87,5 @@ clearFileInput("files");
  }
  document.getElementById('files').addEventListener('change', handleFileSelect, false);
 </script>
-<div>
-    <p><b>Note:</b> Only one Image can be uploaded at one time</p>
-</div>    
 </body>
 </html>
