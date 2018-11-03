@@ -6,7 +6,7 @@ load the class names
 */
 async function loadDict() {
   
-    loc = 'model2/class_names.txt'
+    loc = 'labels.txt'
     console.log(loc)
     await $.ajax({
         url: loc,
@@ -82,7 +82,7 @@ get the prediction
 */
 function predict(imgData) {
         
-        var class_names = ['NO_IDC','Contains_IDC']
+        var class_names = ['Foodz!','Not a foodz :(']
         //get the prediction 
         var pred = model.predict(preprocess(imgData)).dataSync()
         console.log(pred)            
