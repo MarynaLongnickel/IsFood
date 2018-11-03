@@ -82,7 +82,7 @@ get the prediction
 */
 function predict(imgData) {
         
-        var class_names = ['Foodz','_Not_foodz_']
+        var class_names = ['Foodz','Not_foodz']
         //get the prediction 
         var pred = model.predict(preprocess(imgData)).dataSync()
         console.log(pred)            
@@ -109,7 +109,7 @@ async function start(){
 	//img = document.getElementById('image').files[0];
 	
         
-        model = await tf.loadModel('model/model.json')
+        model = await tf.loadModel('model.json')
         
         var status = document.getElementById('status')
       
