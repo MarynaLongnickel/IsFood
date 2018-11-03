@@ -82,7 +82,7 @@ get the prediction
 */
 function predict(imgData) {
         
-        var class_names = ['Foodz!','Not a foodz :(']
+        var class_names = ['Foodz','Not_foodz']
         //get the prediction 
         var pred = model.predict(preprocess(imgData)).dataSync()
         console.log(pred)            
